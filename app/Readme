@@ -1,0 +1,7 @@
+Notes
+dlib can be challenging to install, especially on Windows. Ensure that you have a C++ build environment set up (like Visual Studio) if you're on Windows. For Linux, make sure cmake and development tools are installed.
+If you face any issues with dlib, try installing it using:
+bash
+Copy code
+pip install dlib --no-binary dlib
+Let me know if you encounter any issues during installation!

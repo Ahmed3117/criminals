@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Face Recognition</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    
+    .container {
+        text-align: center;
+    }
+    
+    .video-container {
+        margin-top: 20px;
+        border: 5px solid #007bff;
+        border-radius: 10px;
+        overflow: hidden;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    #videoElement {
+        width: 100%;
+        height: auto;
+    }
+    
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <div class="video-container">
+            <img id="videoElement" src="{% url 'about:video_feed' %}" alt="Video Stream">
+        </div>
+    </div>
+</body>
+</html>
