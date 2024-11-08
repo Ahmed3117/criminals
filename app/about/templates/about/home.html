@@ -4,42 +4,105 @@
     <meta charset="UTF-8">
     <title>Face Recognition</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f9;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-    }
-    
-    .container {
-        text-align: center;
-    }
-    
-    .video-container {
-        margin-top: 20px;
-        border: 5px solid #007bff;
-        border-radius: 10px;
-        overflow: hidden;
-        width: 100%;
-        max-width: 100%;
-    }
-    
-    #videoElement {
-        width: 100%;
-        height: auto;
-    }
-    
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+            margin: 0;
+        }
+        .video-container {
+            position: relative;
+            width: 80%;
+        }
+        video {
+            width: 100%;
+            border: 2px solid #007bff;
+            border-radius: 10px;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        
-        <div class="video-container">
-            <img id="videoElement" src="{% url 'about:video_feed' %}" alt="Video Stream">
-        </div>
+    <div class="video-container">
+        <video id="videoElement" autoplay playsinline></video>
+        <canvas id="canvas"></canvas>
     </div>
+
+    <script>
+        window.onload = function() {
+            const videoElement = document.getElementById('videoElement');
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+    
+            async function startCamera() {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    videoElement.srcObject = stream;
+    
+                    videoElement.addEventListener('loadedmetadata', () => {
+                        canvas.width = videoElement.videoWidth;
+                        canvas.height = videoElement.videoHeight;
+                        captureFrames();
+                    });
+                } catch (error) {
+                    console.error("Error accessing the camera:", error);
+                }
+            }
+    
+            async function captureFrames() {
+                setInterval(async () => {
+                    context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+                    const imageData = canvas.toDataURL('image/jpeg');
+    
+                    if (imageData && imageData !== 'data:,') {
+                        try {
+                            const response = await fetch('/process_image/', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': '{{ csrf_token }}'
+                                },
+                                body: JSON.stringify({ image: imageData })
+                            });
+    
+                            const data = await response.json();
+                            drawBoundingBoxes(data);
+                        } catch (error) {
+                            console.error('Error sending frame:', error);
+                        }
+                    }
+                }, 500);
+            }
+    
+            function drawBoundingBoxes(data) {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+    
+                if (data.faces) {
+                    data.faces.forEach(face => {
+                        const { top, right, bottom, left, label } = face;
+                        let color = label === 'criminal' ? 'red' : (label === 'non-criminal' ? 'green' : 'white');
+    
+                        context.strokeStyle = color;
+                        context.lineWidth = 2;
+                        context.strokeRect(left, top, right - left, bottom - top);
+                        context.fillStyle = color;
+                        context.fillText(label, left, top - 10);
+                    });
+                }
+            }
+    
+            startCamera();
+        };
+    </script>
+    
 </body>
 </html>

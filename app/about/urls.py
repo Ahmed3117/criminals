@@ -7,5 +7,5 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('video_feed/', views.video_feed, name='video_feed'),
+    path('process_image/', views.process_image, name='process_image'),
 ]

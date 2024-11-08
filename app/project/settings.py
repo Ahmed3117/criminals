@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-+a&_h)1p4ert$nm!%@8t$ie^qku11#$+qqk&5$v%$-ft4tv%g*"
 DEBUG =True 
 
-ALLOWED_HOSTS = ['*', "localhost", "50.19.183.215"]
+ALLOWED_HOSTS = ['*', "localhost", "192.168.8.8"]
 
 
 INSTALLED_APPS = [
@@ -30,8 +30,6 @@ INSTALLED_APPS = [
 
 
 ASGI_APPLICATION = 'project.asgi.application'
-
-
 
 
 
