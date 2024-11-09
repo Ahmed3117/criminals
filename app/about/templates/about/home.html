@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -85,12 +86,14 @@
             function drawBoundingBoxes(data) {
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-    
+            
                 if (data.faces) {
+                    console.log('Drawing faces:', data.faces);  // Debug print
                     data.faces.forEach(face => {
                         const { top, right, bottom, left, label } = face;
                         let color = label === 'criminal' ? 'red' : (label === 'non-criminal' ? 'green' : 'white');
-    
+                        console.log(`Face label: ${label}, Color: ${color}`);  // Debug print
+            
                         context.strokeStyle = color;
                         context.lineWidth = 2;
                         context.strokeRect(left, top, right - left, bottom - top);
